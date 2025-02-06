@@ -1,28 +1,50 @@
 import css from "./SearchBar.module.css";
+import { FaMagnifyingGlass } from "react-icons/fa6";
+import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
 
-function SearchBar({ onSearch }) {
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    const form = evt.target;
-    const topic = form.elements.topic.value;
-    if (form.elements.topic.value.trim() === "") {
-      return alert("Please enter search term!");
+export default function SearchBar({ onSubmit }) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+      return toast.error("Cannot be empty");
     }
-    onSearch(topic);
-    form.reset();
+    onSubmit(searchQuery);
+    setSearchQuery("");
   };
 
   return (
-    <form onSubmit={handleSubmit} className={css.searchForm}>
-      <input
-        type="text"
-        name="topic"
-        placeholder="Search photos..."
-        className={css.inputSearch}
+    <header className={css.searchBarContainer}>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 5000,
+          style: {
+            fontFamily: "sans-serif",
+          },
+        }}
       />
-      <button type="submit">Search</button>
-    </form>
+      <form className={css.searchForm} onSubmit={handleSubmit}>
+        <button type="submit" className={css.searchBtn}>
+          <FaMagnifyingGlass />
+        </button>
+        <input
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          value={searchQuery}
+          onChange={handleChange}
+          className={css.searchInput}
+        />
+      </form>
+    </header>
   );
 }
-
-export default SearchBar;
